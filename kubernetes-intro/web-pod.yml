@@ -3,7 +3,7 @@ kind: Pod
 metafata:
   name: web
   labels:
-    date: Apr
+    app: web
 spec:
   containers:
   - name: webhomework
