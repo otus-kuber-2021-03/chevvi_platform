@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: ReplicaSet
+ind: Deployment
 metadata:
   name: paymentservice
   labels:
