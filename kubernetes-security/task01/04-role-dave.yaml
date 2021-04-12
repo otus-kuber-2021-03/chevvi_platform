@@ -5,6 +5,7 @@ metadata:
 roleRef:
   kind: ClusterRole
   name: system:basic-user
+  apiGroup: ""
 subjects:
 - kind: ServiceAccount
   name: dave

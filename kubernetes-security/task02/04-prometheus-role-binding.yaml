@@ -6,6 +6,7 @@ metadata:
 roleRef:
   kind: Role
   name: prometheus-role
+  apiGroup: ""
 subjects:
 - kind: ServiceAccount
   name: carol

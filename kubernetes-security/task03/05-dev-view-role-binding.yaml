@@ -4,7 +4,7 @@ metadata:
   name: dev-view-role-binding
   namespace: dev
 roleRef:
-  apiGroup: rbac.authorization.k8s.io
+  apiGroup: ""
   kind: Role
   name: view
 subjects:

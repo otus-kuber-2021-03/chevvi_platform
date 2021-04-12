@@ -5,6 +5,7 @@ metadata:
 roleRef:
   kind: ClusterRole
   name: cluster-admin
+  apiGroup: ""
 subjects:
 - kind: ServiceAccount
   name: bob
