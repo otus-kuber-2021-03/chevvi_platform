@@ -167,3 +167,24 @@ C использованием параметров maxSurgeиmax Unavailable
       tolerations:
         - key: node-role.kubernetes.io/master
 ~~~~
+
+
+## Домашняя работа 3  
+
+### Задание 1  
+task01 
+Создан Service Account bob, ему выдана роль admin в рамках всего кластера.  
+Создан Service Account dave без доступа к кластеру.  
+
+### Задание 2  
+task02
+Создан Namespace prometheus.
+Создан Service Account carol Namespace prometheus.
+Всем Service Account в Namespace prometheus выдана возможность делать get, list, watch в отношении Pods всего кластера.
+
+
+### Задание 3  
+task03
+Создан Namespace dev.
+Создан Service Account jane в Namespace dev и выдана роль admin в рамках Namespace dev.
+Создан Service Account ken в Namespace dev и выдана роль view в рамках Namespace dev.

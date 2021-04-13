@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: no-full-cluster-role-binding
+roleRef:
+  kind: ClusterRole
+  name: system:basic-user
+  apiGroup: ""
+subjects:
+- kind: ServiceAccount
+  name: dave
+  namespace: default
