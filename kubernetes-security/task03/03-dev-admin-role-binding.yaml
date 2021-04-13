@@ -5,7 +5,7 @@ metadata:
   namespace: dev
 roleRef:
   apiGroup: ""
-  kind: Role
+  kind: ClusterRole
   name: admin
 subjects:
 - kind: ServiceAccount
