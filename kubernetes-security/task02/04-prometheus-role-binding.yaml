@@ -4,9 +4,9 @@ metadata:
   name: prometheus-role-binding
   namespace: prometheus
 roleRef:
-  kind: Role
+  kind: ClusterRole
   name: prometheus-role
   apiGroup: ""
 subjects:
-- kind: ServiceAccount
-  name: ["*"]
+- kind: Group
+  name: system:servieaccount:prometheus
