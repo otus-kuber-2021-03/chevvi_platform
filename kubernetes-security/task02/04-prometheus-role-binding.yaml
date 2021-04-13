@@ -9,4 +9,4 @@ roleRef:
   apiGroup: ""
 subjects:
 - kind: ServiceAccount
-  name: carol
+  name: ["*"]
