@@ -9,4 +9,5 @@ roleRef:
   apiGroup: ""
 subjects:
 - kind: Group
-  name: system:serviceaccount:prometheus
+  name: system:serviceaccounts:prometheus
+  apiGroup: rbac.authorization.k8s.io
