@@ -9,4 +9,4 @@ roleRef:
   apiGroup: ""
 subjects:
 - kind: Group
-  name: system:servieaccount:prometheus
+  name: system:serviceaccount:prometheus
