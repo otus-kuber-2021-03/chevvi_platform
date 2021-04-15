@@ -188,3 +188,64 @@ task03
 Создан Namespace dev.
 Создан Service Account jane в Namespace dev и выдана роль admin в рамках Namespace dev.
 Создан Service Account ken в Namespace dev и выдана роль view в рамках Namespace dev.
+
+
+## Домашняя работа 4  
+
+Домашняя работа выполнялась в kind.
+Был поднят под содержащий контейнер minio. Как StatefulSet. Манифест - minio-statefulset.yaml.
+В итоге создались:
+- под с Minio
+- PVC
+- PV
+~~~
+$kubectl get pods
+NAME      READY   STATUS    RESTARTS   AGE
+minio-0   1/1     Running   0          5m44s
+
+$kubectl get pvc
+NAME           STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+data-minio-0   Bound    pvc-727bbd6f-ec5f-402d-931f-3c775cd96a30   10Gi       RWO            standard       74m
+
+$kubectl get pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                  STORAGECLASS   REASON   AGE
+pvc-727bbd6f-ec5f-402d-931f-3c775cd96a30   10Gi       RWO            Delete           Bound    default/data-minio-0   standard                73m
+~~~
+
+Для того, чтобы StatefulSet был доступен изнутри кластера, был создан Headless Service. Манифест - minio-headless-service.yaml.
+
+### Задание ⭐   
+Секреты, а именно
+- MINIO_ACCESS_KEY
+- MINIO_SECRET_KEY
+были помещены в Secret, написан манифест minio-secret.yaml.
+Секреты были кодированы в base64 
+~~~
+echo -n "<<some_secret>>" | base64
+~~~
+
+Был поправлен (на самом деле создан отдельный) манифест - minio-statefulset-secret.yaml.
+В который были внесены следующие изменения
+~~~
+      containers:
+      - name: minio
+        env:
+          - name: MINIO_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: minio-secret
+                key: MINIO_ACCESS_KEY
+          - name: MINIO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: minio-secret
+                key: MINIO_SECRET_KEY
+~~~
+
+Для проверки работы minio, авторизации с новыми секретами, был проброшен порт
+~~~
+kubectl port-forward pods/minio-0 9000:9000
+~~~
+И сделана авторизация как чераз minio-client, так череp web.
+
+
