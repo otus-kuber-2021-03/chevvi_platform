@@ -249,3 +249,36 @@ kubectl port-forward pods/minio-0 9000:9000
 И сделана авторизация как чераз minio-client, так череp web.
 
 
+## Домашняя работа 5  
+### Задание 1 
+Сетевое взаимодействие Pod, сервисы
+Работа с тестовым веб-приложением
+
+было сделано:
+- Добавление проверок Pod
+- Создание объекта Deployment
+- Добавление сервисов в кластер ( ClusterIP )
+- Включение режима балансировки IPVS
+
+В результат были написаны манифесты:
+- web-deploy.yaml
+- web-svc-cip.yaml
+Доступ к приложению извне кластера
+
+было сделано:
+- Установка MetalLB в Layer2-режиме
+- Добавление сервиса LoadBalancer
+- Установка Ingress-контроллера и прокси ingress-nginx
+- Создание правил Ingress
+
+В результат были написаны манифесты:
+- metallb-config.yaml
+- web-svc-lb.yaml
+- nginx-lb.yaml
+- web-svc-headless.yaml
+- web-ingress.yaml.
+Доступ к CoreDNS снаружи кластера
+
+В результат были написаны манифесты: 
+- coredns/coredns-svc-tcp-lb.yaml 
+- coredns/coredns-svc-udp-lb.yaml. 

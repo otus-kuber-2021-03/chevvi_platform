@@ -8,6 +8,12 @@ spec:
   containers:
   - name: webhomework
     image: chevvi/web:latest
+    readinessProbe:
+      httpGet:
+        path: /index.html
+        port: 80
+    livenessProbe:
+      tcpSocket: { port: 8000}
     volumeMounts:
       - name: app
         mountPath: /app
