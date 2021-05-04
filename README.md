@@ -285,6 +285,49 @@ kubectl port-forward pods/minio-0 9000:9000
 
 
 ## Домашняя работа 6  
+Работа выполнялась в GCP
+Для выполнения рыботы был установлен Helm 3. 
+В процессе выполенения были:
+- созданы неймспейсы
+-- cert-manager
+-- chartmuseum
+-- harbor
+-- hipster-shop
+-- hipster-shop-prod
+-- nginx-ingress
+- созданы релизы
+-- cert-manager
+-- chartmuseum
+-- harbor
+-- hipster-shop
+-- nginx-ingress
+~~~~
+kubectl get ns 
+NAME                STATUS   AGE
+cert-manager        Active   2d22h
+chartmuseum         Active   2d21h
+default             Active   2d23h
+harbor              Active   30h
+hipster-shop        Active   20h
+hipster-shop-prod   Active   29m
+kube-node-lease     Active   2d23h
+kube-public         Active   2d23h
+kube-system         Active   2d23h
+nginx-ingress       Active   2d23h
+helm ls -A
+NAME         	NAMESPACE    	REVISION	UPDATED                                	STATUS  	CHART               	APP VERSION
+cert-manager 	cert-manager 	1       	2021-05-01 19:36:39.961103429 +0300 MSK	deployed	cert-manager-v0.16.1	v0.16.1    
+chartmuseum  	chartmuseum  	1       	2021-05-01 21:10:41.48334046 +0300 MSK 	deployed	chartmuseum-2.13.2  	0.12.0     
+harbor       	harbor       	1       	2021-05-03 12:26:54.539744471 +0300 MSK	deployed	harbor-1.1.2        	1.8.2      
+hipster-shop 	hipster-shop 	5       	2021-05-04 16:58:02.766401148 +0300 MSK	deployed	hipster-shop-0.1.0  	1.16.0     
+nginx-ingress	nginx-ingress	1       	2021-05-01 19:27:35.189913923 +0300 MSK	deployed	nginx-ingress-1.41.3	v0.34.1   
+Устанавливаю чарт хипстер-шопа  
+~~~~
+- выпущены сертификаты на необходимые домены (LE staging)
+
+Был поправлен чарт хипстершопа, а именно вынесено несколько микросервисов в отдельные чарты и кастомизатор.
+Далее приведены отдельные команды применявшиеся при выполнении работы.
+
 ~~~~
 helm upgrade --install hipster-shop kubernetes-templating/hipster-shop/ --namespace=hipster-shop
 Release "hipster-shop" does not exist. Installing it now.
@@ -295,7 +338,7 @@ STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 ~~~~
-
+Смотрю какие поды появились  
 ~~~~
 kubectl get pods -n hipster-shop
 NAME                                     READY   STATUS              RESTARTS   AGE
@@ -310,29 +353,11 @@ productcatalogservice-746f6cfbf7-98nzq   0/1     ContainerCreating   0          
 recommendationservice-5c4c46dbd7-8s6j9   0/1     ContainerCreating   0          10s
 redis-cart-57bd646894-nrkxt              0/1     ContainerCreating   0          10s
 shippingservice-6dc47b7f85-6m7cf         0/1     ContainerCreating   0          10s
-
 ~~~~
-$kubectl get svc -n hipster-shop
-NAME                    TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
-adservice               ClusterIP   10.8.8.199    <none>        9555/TCP       118s
-cartservice             ClusterIP   10.8.10.54    <none>        7070/TCP       118s
-checkoutservice         ClusterIP   10.8.3.214    <none>        5050/TCP       118s
-currencyservice         ClusterIP   10.8.2.255    <none>        7000/TCP       118s
-emailservice            ClusterIP   10.8.8.52     <none>        5000/TCP       118s
-frontend                NodePort    10.8.2.156    <none>        80:30898/TCP   118s
-paymentservice          ClusterIP   10.8.1.240    <none>        50051/TCP      118s
-productcatalogservice   ClusterIP   10.8.12.71    <none>        3550/TCP       118s
-recommendationservice   ClusterIP   10.8.10.135   <none>        8080/TCP       118s
-redis-cart              ClusterIP   10.8.0.30     <none>        6379/TCP       118s
-shippingservice         ClusterIP   10.8.14.234   <none>        50051/TCP      118s
-~~~~
-
-38 страница
-правило на открытие порта для работы хипстершопа
+Смотрю сервисы и добавляю правило на открытие порта для работы хипстершопа
 https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps#kubectl-apply_1
-gcloud compute firewall-rules create test-node-port --allow tcp:node-port
-
 ~~~~
+gcloud compute firewall-rules create test-node-port --allow tcp:node-port
 kubectl get svc -n hipster-shop
 NAME                    TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
 adservice               ClusterIP   10.8.8.199    <none>        9555/TCP       18m
@@ -346,7 +371,7 @@ productcatalogservice   ClusterIP   10.8.12.71    <none>        3550/TCP       1
 recommendationservice   ClusterIP   10.8.10.135   <none>        8080/TCP       18m
 redis-cart              ClusterIP   10.8.0.30     <none>        6379/TCP       18m
 shippingservice         ClusterIP   10.8.14.234   <none>        50051/TCP      18m
-
+~~~~
 ~~~~
 gcloud compute firewall-rules create test-node-port --allow tcp:30898
                                                                                                                                                                                                                                            Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/carbide-skyline-312415/global/firewalls/test-node-port].
@@ -355,7 +380,7 @@ NAME            NETWORK  DIRECTION  PRIORITY  ALLOW      DENY  DISABLED
 test-node-port  default  INGRESS    1000      tcp:30898        False
 ~~~~
 
-dsytckb ahjyn d jnltkmysq fhn b gthtecnfyjdbkb [kmv
+Вынес фронт в отдельный чарт и переустановил hipster-shop  
 ~~~~
 helm upgrade --install hipster-shop kubernetes-templating/hipster-shop/ --namespace=hipster-shop
 Release "hipster-shop" has been upgraded. Happy Helming!
@@ -368,41 +393,7 @@ TEST SUITE: None
 ~~~~
 
 
-
-когда не правильные порты
-~~~~
-kubectl describe ingress -n hipster-shop
-Name:             frontend-hipster-shop
-Namespace:        hipster-shop
-Address:          34.123.222.32
-Default backend:  default-http-backend:80 (10.4.2.4:8080)
-Rules:
-  Host        Path  Backends
-  ----        ----  --------
-  *           
-              /   frontend:8080 ()
-Annotations:  ingress.kubernetes.io/backends: {"k8s-be-30687--bcd2d6b1ad8f529d":"HEALTHY","k8s1-bcd2d6b1-hipster-shop-frontend-80-5753112b":"HEALTHY"}
-              ingress.kubernetes.io/forwarding-rule: k8s2-fr-q60nd0ab-hipster-shop-frontend-hipster-shop-09l0njxq
-              ingress.kubernetes.io/target-proxy: k8s2-tp-q60nd0ab-hipster-shop-frontend-hipster-shop-09l0njxq
-              ingress.kubernetes.io/url-map: k8s2-um-q60nd0ab-hipster-shop-frontend-hipster-shop-09l0njxq
-              meta.helm.sh/release-name: frontend
-              meta.helm.sh/release-namespace: hipster-shop
-              nginx.ingress.kubernetes.io/rewrite-target: /
-Events:
-  Type     Reason     Age                    From                      Message
-  ----     ------     ----                   ----                      -------
-  Normal   CREATE     4m42s                  nginx-ingress-controller  Ingress hipster-shop/frontend-hipster-shop
-  Normal   Sync       3m43s                  loadbalancer-controller   UrlMap "k8s2-um-q60nd0ab-hipster-shop-frontend-hipster-shop-09l0njxq" created
-  Normal   Sync       3m41s                  loadbalancer-controller   TargetProxy "k8s2-tp-q60nd0ab-hipster-shop-frontend-hipster-shop-09l0njxq" created
-  Normal   Sync       3m30s                  loadbalancer-controller   ForwardingRule "k8s2-fr-q60nd0ab-hipster-shop-frontend-hipster-shop-09l0njxq" created
-  Normal   IPChanged  2m18s (x3 over 3m30s)  loadbalancer-controller   IP is now 34.107.153.147
-  Normal   Sync       83s (x11 over 4m42s)   loadbalancer-controller   Scheduled for sync
-  Warning  Translate  82s (x8 over 83s)      loadbalancer-controller   Translation failed: invalid ingress spec: could not find port "8080" in service "hipster-shop/frontend"
-  Normal   UPDATE     81s (x11 over 4m42s)   nginx-ingress-controller  Ingress hipster-shop/frontend-hipster-shop
-~~~~
-
-
-исправленный ингресс устанавливаем и получаем сертификат ЛЕ, сайт открывается.
+Устанавливаем ингресс и получаем сертификат ЛЕ, сайт открывается.  
 ~~~~
 helm upgrade --install frontend kubernetes-templating/frontend --namespace hipster-shop
 Release "frontend" does not exist. Installing it now.
@@ -436,7 +427,7 @@ REVISION: 3
 TEST SUITE: None
 ~~~~
 
-Добавление редиса в качестве замисимости
+Добавление редиса в качестве замисимости  
 ~~~~
 kubernetes-templating/hipster-shop/Chart.yaml
 dependencies:
@@ -448,7 +439,7 @@ dependencies:
     repository: "@stable"
 ~~~~    
 
-Обновляем списки пакетов в репозиториях, и устанавливаем архив сабчарта в каталог charts/: https://rtfm.co.ua/helm-dependencies-aka-subcharts-obzor-i-primer/
+Обновляем списки пакетов в репозиториях, и устанавливаем архив сабчарта в каталог charts/:  
 ~~~~
 helm dep update kubernetes-templating/hipster-shop
 Hang tight while we grab the latest from your chart repositories...
@@ -462,18 +453,21 @@ Downloading redis from repo https://charts.helm.sh/stable
 Deleting outdated charts
 ~~~~
 
-Убеждаемся что чарт скачан и лежит в директории
+Убеждаемся что чарт скачан и лежит в директории  
 ~~~~
 ls -la kubernetes-templating/hipster-shop/charts/
 frontend-0.1.0.tgz  redis-10.5.7.tgz    
 ~~~~
 
-Для пуша ставлю плагин
-helm plugin install https://github.com/chartmuseum/helm-push.git
-Пушу
+Для пуша ставлю плагин  
+helm plugin install https://github.com/chartmuseum/helm-push.git  
+Пушу 
+~~~~
 helm push --username admin --password Harbor12345 kubernetes-templating/hipster-shop/ otus-repochart --insecure
 helm push --username admin --password Harbor12345 kubernetes-templating/frontend/ otus-repochart --insecure
-Добавил в repo.sh ссылку на репу. И ыполнил скрипт, тем самым добавил новый репозиторий.
+~~~~
+
+Добавил в repo.sh ссылку на репу. И ыполнил скрипт, тем самым добавил новый репозиторий.  
 ~~~~
 helm repo list 
 NAME      	URL                                                
@@ -483,11 +477,11 @@ jetstack  	https://charts.jetstack.io
 harbor    	https://helm.goharbor.io                           
 templating	https://harbor.34.71.66.33.nip.io/chartrepo/library
 ~~~~
-Смотрю, что в новом подключенном репозитории (тот ято был подключен для пуша чартов - удалил)
+
+Смотрю, что в новом подключенном репозитории (тот ято был подключен для пуша чартов - удалил)  
 ~~~~
 helm search repo templating
 NAME                   	CHART VERSION	APP VERSION	DESCRIPTION                
 templating/frontend    	0.1.0        	1.16.0     	A Helm chart for Kubernetes
 templating/hipster-shop	0.1.0        	1.16.0     	A Helm chart for Kubernetes
 ~~~~
-
