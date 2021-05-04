@@ -1,0 +1,49 @@
+environments:
+  stage:
+    values:
+      - charts:
+          versions:
+            nginx-ingress: 1.41.3
+            cert-manager: 0.16.1
+            harbor: 1.1.2
+            chartmuseum: 2.13.2
+
+repositories:
+  - name: stable
+    url: https://kubernetes-charts.storage.googleapis.com
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: harbor
+    url: https://helm.goharbor.io
+ 
+helmDefaults:
+  wait: true # just wait for all helms y default
+
+release:
+  - name: nginx-ingress
+    chart: stable/nginx-ingress
+    #version: 1.41.3 # if we dont wanttemplate format - uncomment this and comment next line
+    version: {{ .Values.charts.versions.nginx-ingress }}
+    namespace: nginx-ingress
+  - name: cert-manager
+    chart: jetstack/cert-manager
+    #version: 0.16.1 # if we dont wanttemplate format - uncomment this and comment next line
+    version: {{ .Values.charts.versions.cert-manager }}
+    namespace: cert-manager
+    values: ".envs/{{ .Environment.Name }}/cert-manager/values.yaml"
+  - name: harbor
+    needs: 
+      - cert-manager/cert-manager
+    chart: harbor/harbor
+    #version: 1.1.2 # if we dont wanttemplate format - uncomment this and comment next line
+    version: {{ .Values.charts.versions.harbor }}
+    namespace: harbor
+    values: "./envs/{{ .Environment.Name }}/harbor/values.yaml"
+  - name: chartmuseum
+    needs: 
+      - cert-manager/cert-manager
+    chart: stable/chartmuseum
+    #version: 2.13.2 # if we dont wanttemplate format - uncomment this and comment next line
+    version: {{ .Values.charts.versions.chartmuseum }}
+    namespace: chartmuseum
+    values: "./envs/{{ .Environment.Name }}/chartmuseum/values.yaml"

@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: frontend-hipster-shop
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    #cert-manager.io/acme-challenge-type: http01
+spec:
+  tls:
+    - hosts: 
+      - shop.34.71.66.33.nip.io
+      secretName: shop.34.71.66.33.nip.io
+  rules:
+    - host: shop.34.71.66.33.nip.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: frontend
+              servicePort: 80
